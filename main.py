@@ -65,7 +65,7 @@ def main():
     print("load model time {}".format(time.time() - start_time))
 
     # 设置合成数据生成的轮次
-    args.synthetic_data_generation_round = args.comm_round // 2
+    args.synthetic_data_args.synthetic_data_generation_round = args.comm_round // 2
 
     simulator = Simulator(args, device, dataset, model, trainer)
 
@@ -79,7 +79,7 @@ def main():
         global_model_trajectory.append(copy.deepcopy(simulator.fl_trainer.model_trainer.model.state_dict()))
 
         # 在指定轮次生成合成数据和公平梯度
-        if round_idx == args.synthetic_data_generation_round:
+        if round_idx == args.synthetic_data_args.synthetic_data_generation_round:
             # 生成合成数据
             synthesizer = DataSynthesizer(args)
             synthetic_data, synthetic_labels, synthetic_sensitive_attr = synthesizer.synthesize(
@@ -99,8 +99,9 @@ def main():
             simulator.fl_trainer.fair_gradient = fair_gradient
 
         # 从生成公平梯度后的轮次开始使用
-        if round_idx > args.synthetic_data_generation_round:
+        if round_idx > args.synthetic_data_args.synthetic_data_generation_round:
             # 在 FedAvgAPI 中，公平梯度会自动被添加到聚合过程中
+            pass
 
     simulator.fl_trainer.save()
     print("finishing time {}".format(time.time() - start_time))
@@ -108,5 +109,6 @@ def main():
         simulator.fl_trainer.model_trainer.model.state_dict(),
         os.path.join(args.run_folder, "%s.pt" % (args.save_model_name)),
     )
+
 if __name__ == "__main__":
     main()
