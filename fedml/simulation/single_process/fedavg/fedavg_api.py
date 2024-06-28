@@ -149,7 +149,7 @@ class FedAvgAPI(object):
             self.global_model_trajectory.append(copy.deepcopy(w_global))
 
             # 在指定轮次生成合成数据和公平梯度
-            if round_idx == self.args.synthetic_data_generation_round:
+            if round_idx == self.args.synthetic_data_args.synthetic_data_generation_round:
                 synthesizer = DataSynthesizer(self.args)
                 self.synthetic_data, self.synthetic_labels, self.synthetic_sensitive_attr = synthesizer.synthesize(self.global_model_trajectory)
                 self.fair_gradient = self.generate_fair_gradient(
@@ -160,7 +160,7 @@ class FedAvgAPI(object):
                 )
 
             # 从生成公平梯度后的轮次开始使用
-            if round_idx >= self.args.synthetic_data_generation_round and self.fair_gradient is not None:
+            if round_idx >= self.args.synthetic_data_args.synthetic_data_generation_round and self.fair_gradient is not None:
                 # 将公平梯度添加到 w_locals
                 w_locals.append((len(self.synthetic_data), self.fair_gradient))
 
